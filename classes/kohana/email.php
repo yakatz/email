@@ -289,6 +289,34 @@ class Kohana_Email {
 	}
 
 	/**
+	 * Attach a file.
+	 *
+	 * @param   string  file path
+	 * @return  Email
+	 */
+	public function attach_file($path)
+	{
+		if (file_exists($path)) {
+			$this->mailer()->attach(Swift_Attachment::fromPath($path));
+		}
+		return $this;
+	}
+
+	/**
+	 * Attach content to be sent as a file.
+	 *
+	 * @param   binary  file content
+	 * @param   string  file name
+	 * @param   string  content type
+	 * @return  Email
+	 */
+	public function attach_content($content, $filename, $type)
+	{
+		$this->mailer()->attach(Swift_Attachment::newInstance($content, $filename, $type));
+		return $this;
+	}
+
+	/**
 	 * Send the email. Failed recipients can be collected by passing an array.
 	 *
 	 * @param   array   failed recipient list, by reference
