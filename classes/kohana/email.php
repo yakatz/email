@@ -297,7 +297,7 @@ class Kohana_Email {
 	public function attach_file($path)
 	{
 		if (file_exists($path)) {
-			$this->mailer()->attach(Swift_Attachment::fromPath($path));
+			$this->_message->attach(Swift_Attachment::fromPath($path));
 		}
 		return $this;
 	}
@@ -312,7 +312,7 @@ class Kohana_Email {
 	 */
 	public function attach_content($content, $filename, $type)
 	{
-		$this->mailer()->attach(Swift_Attachment::newInstance($content, $filename, $type));
+		$this->_message->attach(Swift_Attachment::newInstance($content, $filename, $type));
 		return $this;
 	}
 
