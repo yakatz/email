@@ -184,17 +184,23 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Add email recipients.
+	 * Add email recipients. Can add a single address or an array of 
+	 * addresses. See http://swiftmailer.org/docs/recipients-to for format.
 	 *
-	 * @param   string   email address
+	 * @param   mixed    single address (string) or an array of addresses
 	 * @param   string   full name
 	 * @param   string   recipient type: to, cc, bcc
 	 * @return  Email
 	 */
 	public function to($email, $name = NULL, $type = 'to')
 	{
-		// Call $this->_message->{add$Type}($email, $name)
-		call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		// use the set* methods instead of the add* methods
+		// these take an array of addresses => names
+		if (!is_array($email)) {
+			$email = array($email, $name);
+		}
+		// Call $this->_message->{set$Type}($email, $name)
+		call_user_func(array($this->_message, 'set'.ucfirst($type)), $email);
 
 		return $this;
 	}
