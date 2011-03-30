@@ -196,7 +196,8 @@ class Kohana_Email {
 	{
 		// use the set* methods instead of the add* methods
 		// these take an array of addresses => names
-		if (!is_array($email)) {
+		if (!is_array($email))
+		{
 			$email = array($email, $name);
 		}
 		// Call $this->_message->{set$Type}($email, $name)
@@ -302,7 +303,8 @@ class Kohana_Email {
 	 */
 	public function attach_file($path)
 	{
-		if (file_exists($path)) {
+		if (file_exists($path))
+		{
 			$this->_message->attach(Swift_Attachment::fromPath($path));
 		}
 		return $this;
