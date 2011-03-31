@@ -194,14 +194,29 @@ class Kohana_Email {
 	 */
 	public function to($email, $name = NULL, $type = 'to')
 	{
-		// use the set* methods instead of the add* methods
+		// accept multiple email addresses in $email, add iteratively
 		// these take an array of addresses => names
-		if (!is_array($email))
+		if (is_array($email) && count($email))
 		{
-			$email = array($email, $name);
+			foreach ($email as $k => $v) {
+				if (is_numeric($k))
+				{
+					$email = $v;
+					$name = null;
+				}
+				else
+				{
+					$email = $k;
+					$name = $v;
+				}
+				call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+			}
 		}
-		// Call $this->_message->{set$Type}($email, $name)
-		call_user_func(array($this->_message, 'set'.ucfirst($type)), $email);
+		else
+		{
+			// Call $this->_message->{add$Type}($email, $name)
+			call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		}
 
 		return $this;
 	}
