@@ -184,17 +184,39 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Add email recipients.
+	 * Add email recipients. Can add a single address or an array of 
+	 * addresses. See http://swiftmailer.org/docs/recipients-to for format.
 	 *
-	 * @param   string   email address
+	 * @param   mixed    single address (string) or an array of addresses
 	 * @param   string   full name
 	 * @param   string   recipient type: to, cc, bcc
 	 * @return  Email
 	 */
 	public function to($email, $name = NULL, $type = 'to')
 	{
-		// Call $this->_message->{add$Type}($email, $name)
-		call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		// accept multiple email addresses in $email, add iteratively
+		// these take an array of addresses => names
+		if (is_array($email) && count($email))
+		{
+			foreach ($email as $k => $v) {
+				if (is_numeric($k))
+				{
+					$email = $v;
+					$name = null;
+				}
+				else
+				{
+					$email = $k;
+					$name = $v;
+				}
+				call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+			}
+		}
+		else
+		{
+			// Call $this->_message->{add$Type}($email, $name)
+			call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		}
 
 		return $this;
 	}
@@ -286,6 +308,35 @@ class Kohana_Email {
 	public function raw_message()
 	{
 		return $this->_message;
+	}
+
+	/**
+	 * Attach a file.
+	 *
+	 * @param   string  file path
+	 * @return  Email
+	 */
+	public function attach_file($path)
+	{
+		if (file_exists($path))
+		{
+			$this->_message->attach(Swift_Attachment::fromPath($path));
+		}
+		return $this;
+	}
+
+	/**
+	 * Attach content to be sent as a file.
+	 *
+	 * @param   binary  file content
+	 * @param   string  file name
+	 * @param   string  content type
+	 * @return  Email
+	 */
+	public function attach_content($content, $filename, $type)
+	{
+		$this->_message->attach(Swift_Attachment::newInstance($content, $filename, $type));
+		return $this;
 	}
 
 	/**
