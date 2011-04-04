@@ -324,24 +324,29 @@ class Kohana_Email {
 	 */
 	public function attach_file($path)
 	{
-		if (file_exists($path))
-		{
-			$this->_message->attach(Swift_Attachment::fromPath($path));
-		}
+		$this->_message->attach(Swift_Attachment::fromPath($path));
+
 		return $this;
 	}
 
 	/**
 	 * Attach content to be sent as a file.
 	 *
-	 * @param   binary  file content
+	 * @param   binary  file contents
 	 * @param   string  file name
-	 * @param   string  content type
+	 * @param   string  mime type
 	 * @return  Email
 	 */
-	public function attach_content($content, $filename, $type)
+	public function attach_content($data, $file, $mime = NULL)
 	{
-		$this->_message->attach(Swift_Attachment::newInstance($content, $filename, $type));
+		if ( ! $mime)
+		{
+			// Get the mime type from the filename
+			$mime = File::mime_by_ext(pathinfo($file, PATHINFO_EXTENSION));
+		}
+
+		$this->_message->attach(Swift_Attachment::newInstance($data, $file, $mime));
+
 		return $this;
 	}
 
