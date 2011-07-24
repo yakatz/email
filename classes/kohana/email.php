@@ -294,6 +294,8 @@ class Kohana_Email {
 	public function sender($email, $name = NULL)
 	{
 		$this->_message->setSender($email, $name);
+
+		return $this;
 	}
 
 	/**
