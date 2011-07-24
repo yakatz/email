@@ -255,17 +255,45 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Add email senders.
+	 * Add one or more email senders.
 	 *
-	 * @param   string   email address
+	 *     // A single sender
+	 *     $email->from('john.doe@domain.com', 'John Doe');
+	 *
+	 *     // Multiple entries
+	 *     $email->from(array(
+	 *         'frank.doe@domain.com',
+	 *         'jane.doe@domain.com' => 'Jane Doe',
+	 *     ));
+	 *
+	 * @param   mixed    single email address or an array of addresses
 	 * @param   string   full name
 	 * @param   string   sender type: from, replyto
 	 * @return  Email
 	 */
 	public function from($email, $name = NULL, $type = 'from')
 	{
-		// Call $this->_message->{add$Type}($email, $name)
-		call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		if (is_array($email))
+		{
+			foreach ($email as $key => $value)
+			{
+				if (ctype_digit((string) $key))
+				{
+					// Only an email address, no name
+					$this->from($value, NULL, $type);
+				}
+				else
+				{
+					// Email address and name
+					$this->from($key, $value, $type);
+				}
+			}
+		}
+		else
+		{
+			// Call $this->_message->{add$Type}($email, $name)
+			call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		}
 
 		return $this;
 	}
