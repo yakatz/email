@@ -16,7 +16,7 @@ class Kohana_Email {
 	/**
 	 * @var  object  Swiftmailer instance
 	 */
-	protected static $_mailer;
+	public static $_mailer;
 
 	/**
 	 * Creates a SwiftMailer instance.
