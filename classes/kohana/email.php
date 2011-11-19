@@ -131,7 +131,6 @@ class Kohana_Email {
 	{
 		// Create a new message, match internal character set
 		$this->_message = Swift_Message::newInstance()
-			->setCharset(Kohana::$charset)
 			;
 
 		if ($subject)
@@ -395,3 +394,9 @@ class Kohana_Email {
 	}
 
 } // End email
+
+// Load Swiftmailer
+require Kohana::find_file('vendor/swiftmailer', 'lib/swift_required');
+
+// Set the default character set for everything
+Swift_Preferences::getInstance()->setCharset(Kohana::$charset);
