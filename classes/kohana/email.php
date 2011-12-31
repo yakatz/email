@@ -395,6 +395,44 @@ class Kohana_Email {
 		return Email::mailer()->send($this->_message, $failed);
 	}
 
+	/**
+	 * Send the email to a batch of addresses.
+	 *
+	 * !! Failed recipients can be collected by using the second parameter.
+	 *
+	 * @param   array    failed recipient list, by reference
+	 * @return  integer  number of emails sent
+	 */
+	public function batch(array $to, array & $failed = NULL)
+	{
+		// Get a copy of the current message
+		$message = clone $this->_message;
+
+		// Load the mailer instance
+		$mailer = Email::mailer();
+
+		// Count the total number of messages sent
+		$total = 0;
+
+		foreach ($to as $email => $name)
+		{
+			if (ctype_digit((string) $email))
+			{
+				// Only an email address was provided
+				$email = $name;
+				$name  = NULL;
+			}
+
+			// Set the To addre
+			$message->setTo($email, $name);
+
+			// Send this email
+			$total += $mailer->send($message, $failed);
+		}
+
+		return $total;
+	}
+
 } // End email
 
 // Load Swiftmailer
