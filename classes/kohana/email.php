@@ -383,10 +383,12 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Send the email. Failed recipients can be collected by passing an array.
+	 * Send the email.
 	 *
-	 * @param   array   failed recipient list, by reference
-	 * @return  boolean
+	 * !! Failed recipients can be collected by using the second parameter.
+	 *
+	 * @param   array    failed recipient list, by reference
+	 * @return  integer  number of emails sent
 	 */
 	public function send(array & $failed = NULL)
 	{
