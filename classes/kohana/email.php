@@ -130,8 +130,7 @@ class Kohana_Email {
 	public function __construct($subject = NULL, $message = NULL, $type = NULL)
 	{
 		// Create a new message, match internal character set
-		$this->_message = Swift_Message::newInstance()
-			;
+		$this->_message = Swift_Message::newInstance();
 
 		if ($subject)
 		{
@@ -357,6 +356,19 @@ class Kohana_Email {
 	public function attach_file($path)
 	{
 		$this->_message->attach(Swift_Attachment::fromPath($path));
+
+		return $this;
+	}
+
+	/**
+	 * Embed an image
+	 *
+	 * @param   string  image path
+	 * @return  Email
+	 */
+	public function embed($image_path)
+	{
+		$this->_message->embed(Swift_Image::fromPath($image_path));
 
 		return $this;
 	}
