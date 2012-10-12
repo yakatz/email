@@ -364,13 +364,11 @@ class Kohana_Email {
 	 * Embed an image
 	 *
 	 * @param   string  image path
-	 * @return  Email
+	 * @return  Embedded image
 	 */
 	public function embed($image_path)
 	{
-		$this->_message->embed(Swift_Image::fromPath($image_path));
-
-		return $this;
+		return $this->_message->embed(Swift_Image::fromPath($image_path));
 	}
 
 	/**
