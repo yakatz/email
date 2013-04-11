@@ -16,7 +16,7 @@ class Kohana_Email {
 	/**
 	 * @var  object  Swiftmailer instance
 	 */
-	protected static $_mailer;
+	public static $_mailer;
 
 	/**
 	 * Creates a SwiftMailer instance.
@@ -28,7 +28,7 @@ class Kohana_Email {
 		if ( ! Email::$_mailer)
 		{
 			// Load email configuration, make sure minimum defaults are set
-			$config = Kohana::config('email')->as_array() + array(
+			$config = Kohana::$config->load('email')->as_array() + array(
 				'driver'  => 'native',
 				'options' => array(),
 			);
@@ -130,9 +130,7 @@ class Kohana_Email {
 	public function __construct($subject = NULL, $message = NULL, $type = NULL)
 	{
 		// Create a new message, match internal character set
-		$this->_message = Swift_Message::newInstance()
-			->setCharset(Kohana::$charset)
-			;
+		$this->_message = Swift_Message::newInstance();
 
 		if ($subject)
 		{
@@ -255,17 +253,45 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Add email senders.
+	 * Add one or more email senders.
 	 *
-	 * @param   string   email address
+	 *     // A single sender
+	 *     $email->from('john.doe@domain.com', 'John Doe');
+	 *
+	 *     // Multiple entries
+	 *     $email->from(array(
+	 *         'frank.doe@domain.com',
+	 *         'jane.doe@domain.com' => 'Jane Doe',
+	 *     ));
+	 *
+	 * @param   mixed    single email address or an array of addresses
 	 * @param   string   full name
 	 * @param   string   sender type: from, replyto
 	 * @return  Email
 	 */
 	public function from($email, $name = NULL, $type = 'from')
 	{
-		// Call $this->_message->{add$Type}($email, $name)
-		call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		if (is_array($email))
+		{
+			foreach ($email as $key => $value)
+			{
+				if (ctype_digit((string) $key))
+				{
+					// Only an email address, no name
+					$this->from($value, NULL, $type);
+				}
+				else
+				{
+					// Email address and name
+					$this->from($key, $value, $type);
+				}
+			}
+		}
+		else
+		{
+			// Call $this->_message->{add$Type}($email, $name)
+			call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+		}
 
 		return $this;
 	}
@@ -294,6 +320,8 @@ class Kohana_Email {
 	public function sender($email, $name = NULL)
 	{
 		$this->_message->setSender($email, $name);
+
+		return $this;
 	}
 
 	/**
@@ -333,6 +361,17 @@ class Kohana_Email {
 	}
 
 	/**
+	 * Embed an image
+	 *
+	 * @param   string  image path
+	 * @return  Embedded image
+	 */
+	public function embed($image_path)
+	{
+		return $this->_message->embed(Swift_Image::fromPath($image_path));
+	}
+
+	/**
 	 * Attach content to be sent as a file.
 	 *
 	 * @param   binary  file contents
@@ -354,14 +393,64 @@ class Kohana_Email {
 	}
 
 	/**
-	 * Send the email. Failed recipients can be collected by passing an array.
+	 * Send the email.
 	 *
-	 * @param   array   failed recipient list, by reference
-	 * @return  boolean
+	 * !! Failed recipients can be collected by using the second parameter.
+	 *
+	 * @param   array    failed recipient list, by reference
+	 * @return  integer  number of emails sent
 	 */
 	public function send(array & $failed = NULL)
 	{
 		return Email::mailer()->send($this->_message, $failed);
 	}
 
+	/**
+	 * Send the email to a batch of addresses.
+	 *
+	 * !! Failed recipients can be collected by using the second parameter.
+	 *
+	 * @param   array    failed recipient list, by reference
+	 * @return  integer  number of emails sent
+	 */
+	public function batch(array $to, array & $failed = NULL)
+	{
+		// Get a copy of the current message
+		$message = clone $this->_message;
+
+		// Load the mailer instance
+		$mailer = Email::mailer();
+
+		// Count the total number of messages sent
+		$total = 0;
+
+		foreach ($to as $email => $name)
+		{
+			if (ctype_digit((string) $email))
+			{
+				// Only an email address was provided
+				$email = $name;
+				$name  = NULL;
+			}
+
+			// Set the To addre
+			$message->setTo($email, $name);
+
+			// Send this email
+			$total += $mailer->send($message, $failed);
+		}
+
+		return $total;
+	}
+
 } // End email
+
+// Load Swiftmailer
+require Kohana::find_file('vendor/swiftmailer', 'lib/swift_required');
+
+function swiftmailer_configurator() {
+	// Set the default character set for everything
+	Swift_Preferences::getInstance()->setCharset(Kohana::$charset);
+}
+
+Swift::init('swiftmailer_configurator');
