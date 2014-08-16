@@ -10,9 +10,6 @@
  */
 class Kohana_Email {
 
-    // Current module version
-    const VERSION = '1.0.1';
-
     /**
      * @var  object  Swiftmailer instance
      */
