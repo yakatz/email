@@ -443,14 +443,4 @@ class Kohana_Email {
 		return $total;
 	}
 
-} // End email
-
-// Load Swiftmailer
-require Kohana::find_file('vendor/swiftmailer', 'lib/swift_required');
-
-function swiftmailer_configurator() {
-	// Set the default character set for everything
-	Swift_Preferences::getInstance()->setCharset(Kohana::$charset);
 }
-
-Swift::init('swiftmailer_configurator');
