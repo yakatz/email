@@ -17,7 +17,7 @@ class Email
     /**
      * @var  object  Swiftmailer instance
      */
-    public static $_mailer;
+    public static $mailer;
 
     /**
      * Creates a SwiftMailer instance.
@@ -26,7 +26,7 @@ class Email
      */
     public static function mailer()
     {
-        if (!Email::$_mailer) {
+        if (!static::$mailer) {
             // Load email configuration, make sure minimum defaults are set
             $config = Kohana::$config->load('email')->as_array() + array(
                 'driver'  => 'native',
@@ -83,10 +83,10 @@ class Email
             }
 
             // Create the SwiftMailer instance
-            Email::$_mailer = Swift_Mailer::newInstance($transport);
+            static::$mailer = Swift_Mailer::newInstance($transport);
         }
 
-        return Email::$_mailer;
+        return static::$mailer;
     }
 
     /**
@@ -99,13 +99,13 @@ class Email
      */
     public static function factory($subject = null, $message = null, $type = null)
     {
-        return new Email($subject, $message, $type);
+        return new static($subject, $message, $type);
     }
 
     /**
      * @var  object  message instance
      */
-    protected $_message;
+    protected $message;
 
     /**
      * Initialize a new Swift_Message, set the subject and body.
@@ -118,7 +118,7 @@ class Email
     public function __construct($subject = null, $message = null, $type = null)
     {
         // Create a new message, match internal character set
-        $this->_message = Swift_Message::newInstance();
+        $this->message = Swift_Message::newInstance();
 
         if ($subject) {
             // Apply subject
@@ -135,12 +135,12 @@ class Email
      * Set the message subject.
      *
      * @param   string  new subject
-     * @return  Email
+     * @return  $this
      */
     public function subject($subject)
     {
         // Change the subject
-        $this->_message->setSubject($subject);
+        $this->message->setSubject($subject);
 
         return $this;
     }
@@ -152,16 +152,16 @@ class Email
      *
      * @param   string  new message body
      * @param   string  mime type: text/html, etc
-     * @return  Email
+     * @return  $this
      */
     public function message($body, $type = null)
     {
         if (!$type || $type === 'text/plain') {
             // Set the main text/plain body
-            $this->_message->setBody($body);
+            $this->message->setBody($body);
         } else {
             // Add a custom mime type
-            $this->_message->addPart($body, $type);
+            $this->message->addPart($body, $type);
         }
 
         return $this;
@@ -182,7 +182,7 @@ class Email
      * @param   mixed    single email address or an array of addresses
      * @param   string   full name
      * @param   string   recipient type: to, cc, bcc
-     * @return  Email
+     * @return  $this
      */
     public function to($email, $name = null, $type = 'to')
     {
@@ -197,8 +197,8 @@ class Email
                 }
             }
         } else {
-            // Call $this->_message->{add$Type}($email, $name)
-            call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+            // Call $this->message->{add$Type}($email, $name)
+            call_user_func(array($this->message, 'add'.ucfirst($type)), $email, $name);
         }
 
         return $this;
@@ -209,7 +209,7 @@ class Email
      *
      * @param   string   email address
      * @param   string   full name
-     * @return  Email
+     * @return  $this
      */
     public function cc($email, $name = null)
     {
@@ -221,7 +221,7 @@ class Email
      *
      * @param   string   email address
      * @param   string   full name
-     * @return  Email
+     * @return  $this
      */
     public function bcc($email, $name = null)
     {
@@ -243,7 +243,7 @@ class Email
      * @param   mixed    single email address or an array of addresses
      * @param   string   full name
      * @param   string   sender type: from, replyto
-     * @return  Email
+     * @return  $this
      */
     public function from($email, $name = null, $type = 'from')
     {
@@ -258,8 +258,8 @@ class Email
                 }
             }
         } else {
-            // Call $this->_message->{add$Type}($email, $name)
-            call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
+            // Call $this->message->{add$Type}($email, $name)
+            call_user_func(array($this->message, 'add'.ucfirst($type)), $email, $name);
         }
 
         return $this;
@@ -270,7 +270,7 @@ class Email
      *
      * @param   string   email address
      * @param   string   full name
-     * @return  Email
+     * @return  $this
      */
     public function reply_to($email, $name = null)
     {
@@ -284,11 +284,11 @@ class Email
      *
      * @param   string   email address
      * @param   string   full name
-     * @return  Email
+     * @return  $this
      */
     public function sender($email, $name = null)
     {
-        $this->_message->setSender($email, $name);
+        $this->message->setSender($email, $name);
 
         return $this;
     }
@@ -297,11 +297,11 @@ class Email
      * Set the return path for bounce messages.
      *
      * @param   string  email address
-     * @return  Email
+     * @return  $this
      */
     public function return_path($email)
     {
-        $this->_message->setReturnPath($email);
+        $this->message->setReturnPath($email);
 
         return $this;
     }
@@ -313,18 +313,18 @@ class Email
      */
     public function raw_message()
     {
-        return $this->_message;
+        return $this->message;
     }
 
     /**
      * Attach a file.
      *
      * @param   string  file path
-     * @return  Email
+     * @return  $this
      */
     public function attach_file($path)
     {
-        $this->_message->attach(Swift_Attachment::fromPath($path));
+        $this->message->attach(Swift_Attachment::fromPath($path));
 
         return $this;
     }
@@ -337,7 +337,7 @@ class Email
      */
     public function embed($image_path)
     {
-        return $this->_message->embed(Swift_Image::fromPath($image_path));
+        return $this->message->embed(Swift_Image::fromPath($image_path));
     }
 
     /**
@@ -346,7 +346,7 @@ class Email
      * @param   binary  file contents
      * @param   string  file name
      * @param   string  mime type
-     * @return  Email
+     * @return  $this
      */
     public function attach_content($data, $file, $mime = null)
     {
@@ -355,7 +355,7 @@ class Email
             $mime = File::mime_by_ext(pathinfo($file, PATHINFO_EXTENSION));
         }
 
-        $this->_message->attach(Swift_Attachment::newInstance($data, $file, $mime));
+        $this->message->attach(Swift_Attachment::newInstance($data, $file, $mime));
 
         return $this;
     }
@@ -370,7 +370,7 @@ class Email
      */
     public function send(array & $failed = null)
     {
-        return Email::mailer()->send($this->_message, $failed);
+        return static::mailer()->send($this->message, $failed);
     }
 
     /**
@@ -384,10 +384,10 @@ class Email
     public function batch(array $to, array & $failed = null)
     {
         // Get a copy of the current message
-        $message = clone $this->_message;
+        $message = clone $this->message;
 
         // Load the mailer instance
-        $mailer = Email::mailer();
+        $mailer = static::mailer();
 
         // Count the total number of messages sent
         $total = 0;
