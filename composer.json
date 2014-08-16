@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Shadowhand": "classes/"
+            "Shadowhand": "src/"
         },
         "files": ["init.php"]
     }
