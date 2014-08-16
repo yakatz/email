@@ -23,8 +23,8 @@
         "kohana/core": "3.3.*"
     },
     "autoload": {
-        "psr-0": {
-            "Shadowhand": "src/"
+        "psr-4": {
+            "Shadowhand\\": "src/"
         },
         "files": ["init.php"]
     }
