@@ -9,7 +9,8 @@
  * @copyright  (c) 2013-2014 Woody Gilk
  * @license    http://kohanaphp.com/license.html
  */
-class Email {
+class Email
+{
 
     /**
      * @var  object  Swiftmailer instance
@@ -23,8 +24,7 @@ class Email {
      */
     public static function mailer()
     {
-        if ( ! Email::$_mailer)
-        {
+        if (!Email::$_mailer) {
             // Load email configuration, make sure minimum defaults are set
             $config = Kohana::$config->load('email')->as_array() + array(
                 'driver'  => 'native',
@@ -34,59 +34,47 @@ class Email {
             // Extract configured options
             extract($config, EXTR_SKIP);
 
-            if ($driver === 'smtp')
-            {
+            if ($driver === 'smtp') {
                 // Create SMTP transport
                 $transport = Swift_SmtpTransport::newInstance($options['hostname']);
 
-                if (isset($options['port']))
-                {
+                if (isset($options['port'])) {
                     // Set custom port number
                     $transport->setPort($options['port']);
                 }
 
-                if (isset($options['encryption']))
-                {
+                if (isset($options['encryption'])) {
                     // Set encryption
                     $transport->setEncryption($options['encryption']);
                 }
 
-                if (isset($options['username']))
-                {
+                if (isset($options['username'])) {
                     // Require authentication, username
                     $transport->setUsername($options['username']);
                 }
 
-                if (isset($options['password']))
-                {
+                if (isset($options['password'])) {
                     // Require authentication, password
                     $transport->setPassword($options['password']);
                 }
 
-                if (isset($options['timeout']))
-                {
+                if (isset($options['timeout'])) {
                     // Use custom timeout setting
                     $transport->setTimeout($options['timeout']);
                 }
-            }
-            elseif ($driver === 'sendmail')
-            {
+            } elseif ($driver === 'sendmail') {
                 // Create sendmail transport
                 $transport = Swift_SendmailTransport::newInstance();
 
-                if (isset($options['command']))
-                {
+                if (isset($options['command'])) {
                     // Use custom sendmail command
                     $transport->setCommand($options['command']);
                 }
-            }
-            else
-            {
+            } else {
                 // Create native transport
                 $transport = Swift_MailTransport::newInstance();
 
-                if (isset($options['params']))
-                {
+                if (isset($options['params'])) {
                     // Set extra parameters for mail()
                     $transport->setExtraParams($options['params']);
                 }
@@ -107,7 +95,7 @@ class Email {
      * @param   string  body mime type
      * @return  Email
      */
-    public static function factory($subject = NULL, $message = NULL, $type = NULL)
+    public static function factory($subject = null, $message = null, $type = null)
     {
         return new Email($subject, $message, $type);
     }
@@ -125,19 +113,17 @@ class Email {
      * @param   string  body mime type
      * @return  void
      */
-    public function __construct($subject = NULL, $message = NULL, $type = NULL)
+    public function __construct($subject = null, $message = null, $type = null)
     {
         // Create a new message, match internal character set
         $this->_message = Swift_Message::newInstance();
 
-        if ($subject)
-        {
+        if ($subject) {
             // Apply subject
             $this->subject($subject);
         }
 
-        if ($message)
-        {
+        if ($message) {
             // Apply message, with type
             $this->message($message, $type);
         }
@@ -166,15 +152,12 @@ class Email {
      * @param   string  mime type: text/html, etc
      * @return  Email
      */
-    public function message($body, $type = NULL)
+    public function message($body, $type = null)
     {
-        if ( ! $type OR $type === 'text/plain')
-        {
+        if (!$type || $type === 'text/plain') {
             // Set the main text/plain body
             $this->_message->setBody($body);
-        }
-        else
-        {
+        } else {
             // Add a custom mime type
             $this->_message->addPart($body, $type);
         }
@@ -199,26 +182,19 @@ class Email {
      * @param   string   recipient type: to, cc, bcc
      * @return  Email
      */
-    public function to($email, $name = NULL, $type = 'to')
+    public function to($email, $name = null, $type = 'to')
     {
-        if (is_array($email))
-        {
-            foreach ($email as $key => $value)
-            {
-                if (ctype_digit((string) $key))
-                {
+        if (is_array($email)) {
+            foreach ($email as $key => $value) {
+                if (ctype_digit((string) $key)) {
                     // Only an email address, no name
-                    $this->to($value, NULL, $type);
-                }
-                else
-                {
+                    $this->to($value, null, $type);
+                } else {
                     // Email address and name
                     $this->to($key, $value, $type);
                 }
             }
-        }
-        else
-        {
+        } else {
             // Call $this->_message->{add$Type}($email, $name)
             call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
         }
@@ -233,7 +209,7 @@ class Email {
      * @param   string   full name
      * @return  Email
      */
-    public function cc($email, $name = NULL)
+    public function cc($email, $name = null)
     {
         return $this->to($email, $name, 'cc');
     }
@@ -245,7 +221,7 @@ class Email {
      * @param   string   full name
      * @return  Email
      */
-    public function bcc($email, $name = NULL)
+    public function bcc($email, $name = null)
     {
         return $this->to($email, $name, 'bcc');
     }
@@ -267,26 +243,19 @@ class Email {
      * @param   string   sender type: from, replyto
      * @return  Email
      */
-    public function from($email, $name = NULL, $type = 'from')
+    public function from($email, $name = null, $type = 'from')
     {
-        if (is_array($email))
-        {
-            foreach ($email as $key => $value)
-            {
-                if (ctype_digit((string) $key))
-                {
+        if (is_array($email)) {
+            foreach ($email as $key => $value) {
+                if (ctype_digit((string) $key)) {
                     // Only an email address, no name
-                    $this->from($value, NULL, $type);
-                }
-                else
-                {
+                    $this->from($value, null, $type);
+                } else {
                     // Email address and name
                     $this->from($key, $value, $type);
                 }
             }
-        }
-        else
-        {
+        } else {
             // Call $this->_message->{add$Type}($email, $name)
             call_user_func(array($this->_message, 'add'.ucfirst($type)), $email, $name);
         }
@@ -301,7 +270,7 @@ class Email {
      * @param   string   full name
      * @return  Email
      */
-    public function reply_to($email, $name = NULL)
+    public function reply_to($email, $name = null)
     {
         return $this->from($email, $name, 'replyto');
     }
@@ -315,7 +284,7 @@ class Email {
      * @param   string   full name
      * @return  Email
      */
-    public function sender($email, $name = NULL)
+    public function sender($email, $name = null)
     {
         $this->_message->setSender($email, $name);
 
@@ -377,10 +346,9 @@ class Email {
      * @param   string  mime type
      * @return  Email
      */
-    public function attach_content($data, $file, $mime = NULL)
+    public function attach_content($data, $file, $mime = null)
     {
-        if ( ! $mime)
-        {
+        if (!$mime) {
             // Get the mime type from the filename
             $mime = File::mime_by_ext(pathinfo($file, PATHINFO_EXTENSION));
         }
@@ -398,7 +366,7 @@ class Email {
      * @param   array    failed recipient list, by reference
      * @return  integer  number of emails sent
      */
-    public function send(array & $failed = NULL)
+    public function send(array & $failed = null)
     {
         return Email::mailer()->send($this->_message, $failed);
     }
@@ -411,7 +379,7 @@ class Email {
      * @param   array    failed recipient list, by reference
      * @return  integer  number of emails sent
      */
-    public function batch(array $to, array & $failed = NULL)
+    public function batch(array $to, array & $failed = null)
     {
         // Get a copy of the current message
         $message = clone $this->_message;
@@ -422,13 +390,11 @@ class Email {
         // Count the total number of messages sent
         $total = 0;
 
-        foreach ($to as $email => $name)
-        {
-            if (ctype_digit((string) $email))
-            {
+        foreach ($to as $email => $name) {
+            if (ctype_digit((string) $email)) {
                 // Only an email address was provided
                 $email = $name;
-                $name  = NULL;
+                $name  = null;
             }
 
             // Set the To addre
@@ -440,5 +406,4 @@ class Email {
 
         return $total;
     }
-
 }
