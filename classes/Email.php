@@ -9,6 +9,8 @@
  * @copyright  (c) 2013-2014 Woody Gilk
  * @license    http://kohanaphp.com/license.html
  */
+namespace Shadowhand;
+
 class Email
 {
 
