@@ -1,11 +1,12 @@
-<?php defined('SYSPATH') OR die('No direct access allowed.');
+<?php
 /**
  * Email message building and sending.
  *
- * @package    Kohana
+ * @package    shadowhand/email
  * @category   Email
  * @author     Kohana Team
  * @copyright  (c) 2007-2011 Kohana Team
+ * @copyright  (c) 2013-2014 Woody Gilk
  * @license    http://kohanaphp.com/license.html
  */
 class Email {
