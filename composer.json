@@ -1,6 +1,5 @@
 {
     "name": "shadowhand/email",
-    "version": "2.0.1",
     "description": "Email helper class, uses Swiftmailer",
     "keywords": ["email", "helper", "module", "library", "swiftmailer", "kohana", "ohanzee"],
     "homepage": "http://github.com/shadowhand/email",
