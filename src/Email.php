@@ -11,6 +11,17 @@
  */
 namespace Shadowhand;
 
+use Kohana;
+use File;
+
+use Swift_Mailer;
+use Swift_Message;
+use Swift_Attachment;
+use Swift_Image;
+use Swift_SmtpTransport;
+use Swift_SendmailTransport;
+use Swift_MailTransport;
+
 class Email
 {
 
