@@ -2,12 +2,13 @@
 /**
  * Email message building and sending.
  *
- * @package    shadowhand/email
+ * @package    yakatz/kohana-swiftmailer
  * @category   Email
  * @author     Kohana Team
  * @copyright  (c) 2007-2011 Kohana Team
  * @copyright  (c) 2013-2014 Woody Gilk
- * @license    http://kohanaphp.com/license.html
+ * @copyright  (c) 2017 Yehuda Katz
+ * @license    http://kohanaframework.org/license
  */
 namespace Shadowhand;
 
@@ -159,7 +160,7 @@ class Email
     /**
      * Set the message body. Multiple bodies with different types can be added
      * by calling this method multiple times. Every email is required to have
-     * a "text/plain" message body.
+     * a "text/html" message body.
      *
      * @param   string  new message body
      * @param   string  mime type: text/html, etc
@@ -167,9 +168,9 @@ class Email
      */
     public function message($body, $type = null)
     {
-        if (!$type || $type === 'text/plain') {
-            // Set the main text/plain body
-            $this->message->setBody($body);
+        if (!$type || $type === 'text/html') {
+            // Set the main text/html body
+            $this->message->setBody($body, 'text/html');
         } else {
             // Add a custom mime type
             $this->message->addPart($body, $type);

@@ -22,6 +22,11 @@ Additional senders can be added using the `from()` and `reply_to()` methods. If 
 
 To access and modify the [Swiftmailer message](http://swiftmailer.org/docs/messages) directly, use the `raw_message()` method.
 
+### Message Part Order
+
+Due to a [bug](https://github.com/swiftmailer/swiftmailer/issues/184#issuecomment-5198845) in SwiftMailer, a message with HTML and plain text must have the HTML set first.
+As of `kohana-swiftmailer` version `1.1`, `message()` defaults to `text/html`. We are looking for a more flexible solution.
+
 ## Configuration
 
 Configuration is stored in `config/email.php`. Options are dependant upon transport method used. Consult the Swiftmailer documentation for options available to each transport.

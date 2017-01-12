@@ -1,14 +1,13 @@
 {
-    "name": "shadowhand/email",
-    "version": "2.0.1",
-    "description": "Email helper class, uses Swiftmailer",
-    "keywords": ["email", "helper", "module", "library", "swiftmailer", "kohana", "ohanzee"],
-    "homepage": "http://github.com/shadowhand/email",
+    "name": "yakatz/kohana-swiftmailer",
+    "description": "Email helper for Kohana, uses Swiftmailer",
+    "keywords": ["kohana", "email", "helper", "module", "library", "swiftmailer"],
+    "homepage": "https://github.com/yakatz/kohana-swiftmailer",
     "license": "BSD-3-Clause",
     "authors": [
         {
-            "name": "Woody Gilk",
-            "email": "woody.gilk@gmail.com",
+            "name": "Yehuda Katz",
+            "email": "yehuda@ymkatz.net",
             "role": "developer"
         },
         {
